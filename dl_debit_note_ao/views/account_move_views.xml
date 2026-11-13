@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_debit_ao" model="ir.ui.view">
+        <field name="name">account.move.form.debit.ao</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_reverse']" position="after">
+                <button name="action_debit_note"
+                        type="object"
+                        string="Nota de Débito"
+                        groups="account.group_account_invoice"
+                        attrs="{'invisible': ['|', '|', ('debit_origin_id', '!=', False), ('move_type', 'not in', ('out_invoice', 'in_invoice', 'out_refund', 'in_refund')), ('state', '!=', 'posted')]}"/>
+            </xpath>
+            <div class="oe_button_box" position="inside">
+                <button type="object" class="oe_stat_button" name="action_view_debit_notes" icon="fa-plus" attrs="{'invisible': [('debit_note_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="debit_note_count"/></span>
+                        <span class="o_stat_text">Notas de Débito</span>
+                    </div>
+                </button>
+            </div>
+            <xpath expr="//field[@name='invoice_origin']" position="after">
+                <field name="is_debit_note_journal" invisible="1"/>
+                <field name="debit_origin_id"
+                       string="Fatura de Origem"
+                       options="{'no_create': True}"
+                       attrs="{'invisible': [('is_debit_note_journal', '=', False), ('debit_origin_id', '=', False)], 'readonly': [('state', '!=', 'draft')], 'required': [('is_debit_note_journal', '=', True), ('move_type', '=', 'out_invoice')]}"/>
+                <field name="debit_note_reason"
+                       string="Motivo da Nota de Débito"
+                       placeholder="Ex: Acréscimo de custos / Correção de valor faturado..."
+                       attrs="{'invisible': [('is_debit_note_journal', '=', False), ('debit_origin_id', '=', False)], 'readonly': [('state', '!=', 'draft')], 'required': [('is_debit_note_journal', '=', True), ('move_type', '=', 'out_invoice')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_debit_note_out_invoice" model="ir.actions.act_window">
+        <field name="name">Notas de Débito</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
+        <field name="domain">['&amp;', ('move_type', '=', 'out_invoice'), '|', ('debit_origin_id', '!=', False), ('is_debit_note_journal', '=', True)]</field>
+        <field name="context">{'default_move_type': 'out_invoice', 'move_type': 'out_invoice', 'journal_type': 'sale', 'default_is_debit_note': True}</field>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Criar uma nova Nota de Débito
+            </p>
+            <p>
+                As Notas de Débito permitem retificar positivamente faturas emitidas ou anular Notas de Crédito, mantendo a rastreabilidade fiscal com a fatura de origem exigida pela AGT.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_debit_note"
+              name="Notas de Débito"
+              action="action_debit_note_out_invoice"
+              parent="account.menu_finance_receivables"
+              sequence="16"/>
+
+    <record id="action_debit_note_in_invoice" model="ir.actions.act_window">
+        <field name="name">Notas de Débito de Fornecedor</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
+        <field name="domain">['&amp;', ('move_type', '=', 'in_invoice'), '|', ('debit_origin_id', '!=', False), ('is_debit_note_journal', '=', True)]</field>
+        <field name="context">{'default_move_type': 'in_invoice', 'move_type': 'in_invoice', 'journal_type': 'purchase', 'default_is_debit_note': True}</field>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registar uma nova Nota de Débito de Fornecedor
+            </p>
+            <p>
+                As Notas de Débito de Fornecedor permitem registar acréscimos de valor sobre faturas de compra ou anular Notas de Crédito de fornecedor, mantendo a ligação à fatura de origem.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_debit_note_vendor"
+              name="Notas de Débito"
+              action="action_debit_note_in_invoice"
+              parent="account.menu_finance_payables"
+              sequence="15"/>
+
+    <record id="account.menu_action_move_in_refund_type" model="ir.ui.menu">
+        <field name="name">Notas de Crédito</field>
+    </record>
+</odoo>

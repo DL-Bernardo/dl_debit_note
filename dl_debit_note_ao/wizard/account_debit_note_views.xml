@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_debit_note" model="ir.ui.view">
+        <field name="name">account.debit.note.form</field>
+        <field name="model">account.debit.note</field>
+        <field name="arch" type="xml">
+            <form string="Emitir Nota de Débito">
+                <field name="move_type" invisible="1"/>
+                <field name="journal_type" invisible="1"/>
+                <field name="move_ids" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="reason" required="1" placeholder="Ex: Correção de valor faturado / Custos adicionais..."/>
+                        <field name="date" string="Data da Nota de Débito"/>
+                        <field name="copy_lines" invisible="move_type in ['in_refund', 'out_refund']"/>
+                    </group>
+                    <group>
+                        <field name="journal_id" domain="[('type', '=', journal_type)]"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Criar Nota de Débito" name="create_debit" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

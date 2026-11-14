@@ -1,19 +1,26 @@
 # Angola Debit Notes & Origin Control (`dl_debit_note_ao`)
 
-Módulo unificado de **Notas de Débito (ND)** para Odoo (v16, v17, v18, v19 e v20), alinhado com o padrão internacional do Odoo (`account_debit_note`) e com os requisitos legais e fiscais da **AGT (Administração Geral Tributária de Angola - SAF-T AO e Faturação Eletrónica)**.
+Unified Customer & Vendor Debit Note Management (**ND** & **NDF**) for Odoo **16.0, 17.0, 18.0, 19.0, and 20.0**, combining international Odoo standards with Angolan fiscal compliance (**AGT / SAF-T AO / Electronic Invoicing**).
 
-## Principais Funcionalidades
+## Key Features
 
-1. **Configuração Automática do Diário `ND`:**
-   - Cria ou atualiza automaticamente o diário **Nota de Débito (`ND`)** para todas as empresas na instalação (`post_init_hook`).
-   - Configura automaticamente `saft_inv_type = 'ND'` quando o módulo de certificação AGT (`dl_certification_ao`) está instalado.
-2. **Duplo Fluxo de Emissão (Wizard + Criação Direta):**
-   - **Via Assistente (Wizard):** Botão **"Nota de Débito"** diretamente na fatura ou nota de crédito publicada, pré-selecionando o diário `ND` e exigindo o motivo da emissão.
-   - **Via Menu (*Contabilidade → Clientes → Notas de Débito*):** Permite criar Notas de Débito diretamente, pré-selecionando o diário `ND` e habilitando a escolha manual da **Fatura de Origem** (`debit_origin_id`) filtrada pelo cliente.
-3. **Controlo e Validação Fiscal (Padrão AGT & Internacional):**
-   - Obrigatoriedade da **Fatura de Origem** (`debit_origin_id`) e do **Motivo da Nota de Débito** (`debit_note_reason`) ao confirmar (`action_post`).
-   - Validação de que a fatura original pertence ao mesmo cliente e encontra-se publicada (`posted`).
-   - Garantia de que o montante total da Nota de Débito é estritamente positivo (`amount_total > 0`).
-4. **Integração Nativa com Ecossistema Angola:**
-   - Sincroniza automaticamente `invoice_origin`, `invoice_origin_id`, `ref` e `reason_cancel` para impressão nos relatórios PDF (`dl_layouts_ao`), exportação SAF-T AO (`dl_certification_ao`) e submissão de Faturação Eletrónica (`l10n_ao_fe`).
-   - Migra automaticamente dados legados do antigo campo `origin_invoice_id` (`custom_debit_note_origin`) para `debit_origin_id`.
+1. **Automated ND & NDF Fiscal Journals (`_post_init_hook` & `account.journal`):**
+   - Automatically provisions and configures the **Customer Debit Note (`ND`)** sales journal and **Vendor Debit Note (`NDF`)** purchase journal for each company.
+   - Automatically sets `saft_inv_type = 'ND'` when `dl_certification_ao` is installed and disables duplicate `DND/` prefixing (`debit_sequence = False`).
+   - Unlocks and organizes **Customers -> Debit Notes**, **Vendors -> Debit Notes**, and **Vendors -> Credit Notes** menus.
+
+2. **Dual Issuance Workflow:**
+   - **1-Click Wizard from Invoice/Credit Note:** Click **Debit Note (Nota de Debito)** on any posted document to launch the pre-filled wizard with automatic `ND`/`NDF` journal selection and optional line copying.
+   - **Direct Creation from Dedicated Menus:** Create Debit Notes directly from **Customers -> Debit Notes** or **Vendors -> Debit Notes** with dynamic partner-filtered **Origin Invoice (`debit_origin_id`)** selection.
+
+3. **Pre-Posting AGT Fiscal Validations (`action_post`):**
+   - Enforces a mandatory **Origin Invoice (`debit_origin_id`)** that must be in `posted` state and belong to the same commercial partner.
+   - Enforces a mandatory **Issuance Reason (`debit_note_reason` / `ref`)**.
+   - Verifies that the Debit Note total amount is strictly positive (`amount_total > 0`).
+
+4. **Full Angola Ecosystem Synchronization:**
+   - Automatically synchronizes `debit_origin_id`, `invoice_origin`, `invoice_origin_id`, `ref`, and `reason_cancel` for seamless compatibility with `dl_certification_ao` (SAF-T AO), `dl_layouts_ao` (A4 PDF Reports), and `l10n_ao_fe` (Electronic Invoicing).
+   - Automatically migrates legacy `origin_invoice_id` records to `debit_origin_id`.
+
+---
+Developed by **DIGITALUB ANGOLA, LDA** — [www.digitalub.ao](https://www.digitalub.ao) | `suporte@digitalub.ao`
